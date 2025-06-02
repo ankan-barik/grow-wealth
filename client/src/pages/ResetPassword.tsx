@@ -66,9 +66,9 @@ const ResetPassword = () => {
       <div className="w-full max-w-md p-4">
         <Card className="shadow-lg bg-white rounded-xl">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-blue-700">
-              Reset Your Password
-            </CardTitle>
+             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-500 via-green-600 to-emerald-600 bg-clip-text text-transparent">
+  Reset Your Password
+</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleResetPassword} className="space-y-4">
