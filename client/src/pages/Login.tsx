@@ -147,9 +147,9 @@ const Login = () => {
     return emailValidation.isValid ? "text-green-600" : "text-red-600";
   };
   
-  if (showForgotPassword) {
+ if (showForgotPassword) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-purple-200">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-500 via-green-200 to-indigo-400">
         <div className="w-full max-w-md p-4 animate-fade-in">
           <Card className="shadow-lg border border-gray-200 bg-white rounded-xl">
             <CardHeader className="space-y-1 pb-2">
@@ -158,13 +158,13 @@ const Login = () => {
                   variant="ghost"
                   size="sm"
                   onClick={backToLogin}
-                  className="p-1 h-8 w-8 hover:bg-gray-100"
+                  className="p-1 h-8 w-8 hover:bg-gray-400 text-gray-800"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <CardTitle className="text-2xl font-bold text-blue-700">Reset Password</CardTitle>
               </div>
-              <CardDescription className="text-center text-gray-500">
+              <CardDescription className="text-center text-gray-600">
                 Enter your email address and we'll send you instructions to reset your password
               </CardDescription>
             </CardHeader>
@@ -180,7 +180,7 @@ const Login = () => {
                       placeholder="name@example.com"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
-                      className={`pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white ${
+                      className={`pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white text-black ${
                         resetEmail && emailValidation.message ? 
                         (emailValidation.isValid ? 'border-green-500 focus:border-green-500' : 'border-red-500 focus:border-red-500') : ''
                       }`}
@@ -217,18 +217,18 @@ const Login = () => {
                   {isResetting ? "Sending..." : "Send Reset Email"}
                 </Button>
                 
-                <div className="text-xs text-gray-500 text-center">
+                <div className="text-xs text-gray-600 text-center">
                   <p>Reset link will be valid for 1 hour</p>
                   <p>Check your spam folder if you don't see the email</p>
                 </div>
               </form>
             </CardContent>
-            <CardFooter className="flex justify-center border-t pt-4">
+            <CardFooter className="flex justify-center border-t border-gray-200 pt-4">
               <p className="text-sm text-gray-600">
                 Remember your password?{" "}
                 <button 
                   onClick={backToLogin}
-                  className="text-red-600 hover:text-red-600 hover:underline font-medium"
+                  className="text-red-600 hover:text-red-700 hover:underline font-medium"
                 >
                   Back to Login
                 </button>
@@ -239,13 +239,17 @@ const Login = () => {
       </div>
     );
   }
-  
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-300 via-blue-200 to-indigo-400">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-500 via-green-200 to-indigo-400">
       <div className="w-full max-w-md p-4 animate-fade-in">
         <Card className="shadow-lg border border-gray-200 bg-white rounded-xl">
           <CardHeader className="space-y-1 pb-2">
-            <CardTitle className="text-2xl font-bold text-center text-blue-700">Welcome To Expensia</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-500 via-green-600 to-emerald-600 bg-clip-text text-transparent">
+  Welcome To Expensia
+</CardTitle>
+
+
             <CardDescription className="text-center text-gray-500">
               Enter your credentials to access your account
             </CardDescription>

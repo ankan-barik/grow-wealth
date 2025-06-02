@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, User, Mail, Lock, CheckCircle, XCircle } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, CheckCircle, XCircle, UserPlus } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -177,11 +177,20 @@ const Register = () => {
   };
   
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-500 via-green-200 to-indigo-400">
       <div className="w-full max-w-md p-4 animate-fade-in">
         <Card className="shadow-lg border border-gray-200 bg-white rounded-xl">
           <CardHeader className="space-y-1 pb-2">
-            <CardTitle className="text-2xl font-bold text-center text-blue-700">Create Your Account</CardTitle>
+            {/* Account Logo */}
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <UserPlus className="h-8 w-8 text-green-700" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-500 via-green-600 to-emerald-500 bg-clip-text text-transparent">
+  Create Your Expensia Account
+</CardTitle>
+
             <CardDescription className="text-center text-gray-500">
               Join Expensia to start managing your finances
             </CardDescription>
