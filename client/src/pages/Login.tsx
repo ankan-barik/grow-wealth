@@ -162,7 +162,9 @@ const Login = () => {
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <CardTitle className="text-2xl font-bold text-blue-700">Reset Password</CardTitle>
+                 <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-500 via-green-600 to-emerald-600 bg-clip-text text-transparent">
+ Reset Your Password
+</CardTitle>
               </div>
               <CardDescription className="text-center text-gray-600">
                 Enter your email address and we'll send you instructions to reset your password

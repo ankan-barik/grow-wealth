@@ -62,7 +62,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-500 via-green-200 to-indigo-400">
       <div className="w-full max-w-md p-4">
         <Card className="shadow-lg bg-white rounded-xl">
           <CardHeader>
