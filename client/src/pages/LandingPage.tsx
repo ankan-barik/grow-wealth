@@ -119,7 +119,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="w-full md:w-1/2 text-center md:text-left">
              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
-  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Build the Life You Want</span> <span className="text-pink-600"> One Rupee at a Time</span>
+  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Build The Life You Want</span> <span className="text-pink-600"> One Rupee at a Time</span>
 </h1>
 
               <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg mx-auto md:mx-0">
@@ -180,7 +180,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 stagger-animation">
             <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-              🎯 Powerful Features
+               Powerful Features
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
               Everything You Need To
@@ -205,9 +205,9 @@ const LandingPage = () => {
       Easily add income and expenses with detailed categorization to keep track of where your money goes.
     </p>
     <div className="flex items-center text-purple-600 font-semibold group-hover:text-purple-700 transition-colors duration-300">
-      Learn More 
+      
       <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+        
       </svg>
     </div>
   </div>
@@ -226,9 +226,9 @@ const LandingPage = () => {
       Beautiful charts and graphs help you understand your spending habits and financial trends at a glance.
     </p>
     <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700 transition-colors duration-300">
-      Explore Analytics
+     
       <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+        
       </svg>
     </div>
   </div>
@@ -247,9 +247,9 @@ const LandingPage = () => {
       See your financial data update instantly as you add new transactions, with immediate recalculation of totals.
     </p>
     <div className="flex items-center text-orange-600 font-semibold group-hover:text-orange-600 transition-colors duration-300">
-      Security Details
+      
       <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+
       </svg>
     </div>
   </div>
@@ -272,10 +272,10 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto stagger-animation">
             <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              🎉 Keep Your Money Tracked
+               Keep Your Money Tracked
             </span>
             <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Ready to Transform Your
+              Ready To Transform Your
               <span className="block text-yellow-300 glow-text">Financial Future?</span>
             </h2>
             <p className="text-xl md:text-2xl mb-10 text-white/90 leading-relaxed max-w-3xl mx-auto">
