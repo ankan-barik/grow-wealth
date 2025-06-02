@@ -16,7 +16,7 @@ const ResetPassword = () => {
   
   const { token } = useParams();
   const navigate = useNavigate();
-
+const backendURL = import.meta.env.VITE_BACKEND_URL;
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -35,7 +35,7 @@ const ResetPassword = () => {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
+      const response = await fetch(`${backendURL}/api/auth/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -59,9 +59,75 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-const User = mongoose.model('User', userSchema);
+// Transaction Schema
+const transactionSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: [
+      'salary', 'freelance', 'investments', 'other_income',
+      'rent', 'groceries', 'utilities', 'entertainment', 
+      'transportation', 'dining', 'shopping', 'healthcare', 
+      'education', 'travel', 'personal', 'other_expense'
+    ]
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['income', 'expense']
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  date: {
+    type: Date,
+    required: true
+  }
+}, {
+  timestamps: true
+});
 
-// Fixed Email Configuration - Changed createTransporter to createTransport
+const User = mongoose.model('User', userSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+// JWT Authentication Middleware
+const authenticateToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'Access token required' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const user = await User.findById(decoded.userId).select('-password');
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
+// Fixed Email Configuration
 const createEmailTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error('❌ Email credentials not configured');
@@ -70,7 +136,7 @@ const createEmailTransporter = () => {
 
   console.log('📧 Configuring email with:', process.env.EMAIL_USER);
 
-  return nodemailer.createTransport({  // ✅ Correct method name
+  return nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
     port: 587,
@@ -95,7 +161,6 @@ const sendPasswordResetEmail = async (userEmail, resetToken, userName) => {
       throw new Error('Email service not configured');
     }
 
-    // Verify SMTP connection
     console.log('🔍 Testing SMTP connection...');
     await transporter.verify();
     console.log('✅ SMTP connection verified');
@@ -181,6 +246,42 @@ const validateInput = (req, res, next) => {
   
   if (password.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+  
+  next();
+};
+
+// Transaction validation middleware
+const validateTransaction = (req, res, next) => {
+  const { amount, category, type, description, date } = req.body;
+  
+  if (!amount || !category || !type || !description || !date) {
+    return res.status(400).json({ 
+      message: 'Amount, category, type, description, and date are required' 
+    });
+  }
+  
+  if (amount <= 0) {
+    return res.status(400).json({ message: 'Amount must be greater than 0' });
+  }
+  
+  const validCategories = [
+    'salary', 'freelance', 'investments', 'other_income',
+    'rent', 'groceries', 'utilities', 'entertainment', 
+    'transportation', 'dining', 'shopping', 'healthcare', 
+    'education', 'travel', 'personal', 'other_expense'
+  ];
+  
+  if (!validCategories.includes(category)) {
+    return res.status(400).json({ message: 'Invalid category' });
+  }
+  
+  if (!['income', 'expense'].includes(type)) {
+    return res.status(400).json({ message: 'Type must be either income or expense' });
+  }
+  
+  if (!description.trim()) {
+    return res.status(400).json({ message: 'Description cannot be empty' });
   }
   
   next();
@@ -298,16 +399,13 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       });
     }
 
-    // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiry = Date.now() + 3600000; // 1 hour
 
-    // Save reset token to user
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = resetTokenExpiry;
     await user.save();
 
-    // Send email
     const emailSent = await sendPasswordResetEmail(email, resetToken, user.name);
 
     if (emailSent) {
@@ -315,7 +413,6 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         message: `Password reset instructions have been sent to ${email}. Please check your inbox and spam folder.` 
       });
     } else {
-      // Clear reset token if email failed
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
       await user.save();
@@ -374,6 +471,98 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
   }
 });
 
+// Transaction Routes
+
+// Get all transactions for authenticated user
+app.get('/api/transactions', authenticateToken, async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ userId: req.user._id })
+      .sort({ createdAt: -1 });
+
+    const formattedTransactions = transactions.map(transaction => ({
+      id: transaction._id,
+      userId: transaction.userId,
+      amount: transaction.amount,
+      category: transaction.category,
+      type: transaction.type,
+      description: transaction.description,
+      date: transaction.date
+    }));
+
+    res.json({
+      message: 'Transactions retrieved successfully',
+      transactions: formattedTransactions
+    });
+
+  } catch (error) {
+    console.error('Get transactions error:', error);
+    res.status(500).json({ message: 'Server error while fetching transactions' });
+  }
+});
+
+// Add new transaction
+app.post('/api/transactions', authenticateToken, validateTransaction, async (req, res) => {
+  try {
+    const { amount, category, type, description, date } = req.body;
+
+    const transaction = new Transaction({
+      userId: req.user._id,
+      amount: parseFloat(amount),
+      category,
+      type,
+      description: description.trim(),
+      date: new Date(date)
+    });
+
+    await transaction.save();
+
+    const formattedTransaction = {
+      id: transaction._id,
+      userId: transaction.userId,
+      amount: transaction.amount,
+      category: transaction.category,
+      type: transaction.type,
+      description: transaction.description,
+      date: transaction.date
+    };
+
+    res.status(201).json({
+      message: 'Transaction added successfully',
+      transaction: formattedTransaction
+    });
+
+  } catch (error) {
+    console.error('Add transaction error:', error);
+    res.status(500).json({ message: 'Server error while adding transaction' });
+  }
+});
+
+// Delete transaction
+app.delete('/api/transactions/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid transaction ID' });
+    }
+
+    const transaction = await Transaction.findOneAndDelete({
+      _id: id,
+      userId: req.user._id
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    res.json({ message: 'Transaction deleted successfully' });
+
+  } catch (error) {
+    console.error('Delete transaction error:', error);
+    res.status(500).json({ message: 'Server error while deleting transaction' });
+  }
+});
+
 // Health check route
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -384,7 +573,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Test email configuration - Fixed method name
+// Test email configuration
 app.get('/api/test-email', async (req, res) => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -394,7 +583,7 @@ app.get('/api/test-email', async (req, res) => {
       });
     }
 
-    const transporter = createEmailTransporter();  // This now uses correct createTransport
+    const transporter = createEmailTransporter();
     if (!transporter) {
       return res.status(500).json({ 
         message: 'Failed to create email transporter'

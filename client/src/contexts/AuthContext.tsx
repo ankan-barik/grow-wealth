@@ -14,16 +14,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Use consistent API URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       try {
         setUser(JSON.parse(userData));
@@ -38,9 +40,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);
-      console.log('🔄 Attempting login...');
+      console.log('🔄 Attempting login to:', `${API_BASE_URL}/api/auth/login`);
 
-      const response = await fetch(`${backendURL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('📡 Login response status:', response.status);
       const data = await response.json();
-      console.log('📦 Login response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      
+
       toast({
         title: "Welcome Back!",
         description: "You've successfully logged in to your account.",
@@ -67,11 +68,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     } catch (error) {
       console.error('❌ Login error:', error);
-      
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
         toast({
           title: "Connection Error",
-          description: "Cannot connect to server. Please ensure backend is running on port 5000.",
+          description: `Cannot connect to server at ${API_BASE_URL}. Please ensure backend is running on port 8001.`,
           variant: "destructive",
         });
       } else {
@@ -90,19 +90,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (name: string, email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);
-      console.log('🔄 Attempting registration...');
-      console.log('📝 Registration data:', { name, email, passwordLength: password.length });
+      console.log('🔄 Attempting registration to:', `${API_BASE_URL}/api/auth/register`);
 
       // Test backend connectivity first
       try {
-        const healthResponse = await fetch(`${backendURL}/api/health`);
+        const healthResponse = await fetch(`${API_BASE_URL}/api/health`);
         console.log('🏥 Backend health check:', healthResponse.status);
       } catch (healthError) {
         console.error('❌ Backend health check failed:', healthError);
-        throw new Error('Cannot connect to server. Please ensure backend is running.');
+        throw new Error(`Cannot connect to server at ${API_BASE_URL}. Please ensure backend is running on port 8001.`);
       }
 
-      const response = await fetch(`${backendURL}/api/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +111,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('📡 Registration response status:', response.status);
       const data = await response.json();
-      console.log('📦 Registration response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
@@ -121,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      
+
       toast({
         title: "Registration Successful!",
         description: "Your account has been created and you're now logged in.",
@@ -129,20 +127,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     } catch (error) {
       console.error('❌ Registration error:', error);
-      
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        toast({
-          title: "Connection Error",
-          description: "Cannot connect to server. Please ensure backend is running.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Registration Failed",
-          description: error instanceof Error ? error.message : "Please try again later.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Registration Failed",
+        description: error instanceof Error ? error.message : "Please try again later.",
+        variant: "destructive",
+      });
       throw error;
     } finally {
       setIsLoading(false);
@@ -153,7 +142,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('🔄 Attempting password reset for:', email);
 
-      const response = await fetch(`${backendURL}/api/auth/forgot-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -213,10 +202,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
   return context;
 };
